@@ -78,17 +78,12 @@ void restart_root_service(int fd, void *cookie) {
         WriteFdExactly(fd, "adbd is already running as root\n");
         adb_close(fd);
     } else {
-        if (!__android_log_is_debuggable()) {
-            WriteFdExactly(fd, "adbd cannot run as root in production builds\n");
-            adb_close(fd);
-            return;
-        }
 
         std::string root_access = android::base::GetProperty("persist.sys.root_access", "0");
         std::string build_type = android::base::GetProperty("ro.build.type", "");
-        std::string lineage_version = android::base::GetProperty("ro.lineage.version", "");
+        std::string liquid_version = android::base::GetProperty("ro.liquid.version", "");
 
-        if (!lineage_version.empty() && build_type != "eng" && (std::stoi(root_access) & 2) != 2) {
+        if (!liquid_version.empty() && build_type != "eng" && (std::stoi(root_access) & 2) != 2) {
             WriteFdExactly(fd, "root access is disabled by system setting - "
                     "enable in Settings -> System -> Development options\n");
             adb_close(fd);
